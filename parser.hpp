@@ -88,6 +88,7 @@ private:
                     default: break;
                 }
 
+                memset(user_defined_var, 0, strlen((cpint8) user_defined_var));
                 delete user_defined_var;
                 user_defined_var = nullptr;
                 break;
@@ -112,7 +113,6 @@ private:
 
         while(yaml_file_data->next != nullptr)
         {
-            printf("%s\n", yaml_file_data->user_defined);
             if(yaml_file_data->yod_test((cpint8) "os_type", true))
             {
                 if(strcmp((cpint8) yaml_file_data->vdata_as_string, "bit32") == 0)
@@ -205,6 +205,12 @@ private:
         printf("OS Name: %s\n\tOS Version: %s\n\tFS Type: %X (%s)\n\t",
             yod.OS_name, yod.OS_version,
             yod.FS_type, yod.get_fs_name());
+        printf("OS Disk Image Name: %s\n\tAuto Format: %s\n\t",
+            yod.disk_name, yod.auto_format ? "Yes" : "No");
+        printf("Bin Folder: %s\n\tKernel Source Code File: %s\n\t",
+            yod.bin_folder, yod.kernel_source_filename);
+        printf("Kernel .bin Filename: %s\n\tKernel .o Filename: %s\n",
+            yod.kernel_bin_filename, yod.kernel_o_filename);
     }
 
 public:
