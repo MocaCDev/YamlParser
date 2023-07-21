@@ -167,6 +167,7 @@ public:
 
         yaml_file_data->user_defined = new uint8[strlen((cpint8) user_def_name)];
         memcpy(yaml_file_data->user_defined, user_def_name, strlen((cpint8) user_def_name));
+        yaml_file_data->user_defined[strlen((cpint8) user_def_name)] = 0;
 
         yaml_file_data->data_type = type;
         switch(yaml_file_data->data_type)
