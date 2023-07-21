@@ -7,6 +7,7 @@ namespace YamlLexer
 
 /* Some thigs that'll help us. */
 #define is_ascii(x) (x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z')
+#define is_ascii_WE(x, exc) (is_ascii(x)) || (x == exc)
 #define is_number(x) (x >= '0' && x <= '9')
 #define is_hex_dec(x) ((x >= 'A' && x <= 'F') || (x >= 'a' && x <= 'f'))
 #define is_type_of_space(x) (x == ' ') || (x == '\t')
@@ -44,6 +45,7 @@ struct token
         /* If there is existing data, free it. */
         if(token_value)
         {
+            memset(token_value, 0, strlen((cpint8) token_value));
             delete token_value;
             token_value = nullptr;
         }
@@ -236,7 +238,7 @@ private:
         puint8 user_def_val = (puint8) calloc(1, sizeof(*user_def_val));
         uint16 index = 0;
 
-        while(is_ascii(ylexer->curr_char) && !(ylexer->curr_char == '\0'))
+        while(is_ascii_WE(ylexer->curr_char, '_') && !(ylexer->curr_char == '\0'))
         {
             user_def_val[index] = ylexer->curr_char;
             index++;
@@ -269,6 +271,7 @@ public:
 
     void get_token()
     {
+        get_token_beginning:
         if(is_type_of_space(ylexer->curr_char))
         {
             while(is_type_of_space(ylexer->curr_char))
@@ -309,6 +312,15 @@ public:
         check_char:
         switch(ylexer->curr_char)
         {
+            case '#': {
+                advance_lexer();
+
+                while(!lexer_peek('\n'))
+                    advance_lexer();
+                advance_lexer();
+                goto get_token_beginning;
+                break;
+            }
             case '[': advance_lexer();ytoken->new_token(YamlTokens::lsqrbr, make_str('['));return;break;
             case ']': advance_lexer();ytoken->new_token(YamlTokens::rsqrbr, make_str(']'));return;break;
             case ':': advance_lexer();ytoken->new_token(YamlTokens::colon, make_str(':'));return;break;
